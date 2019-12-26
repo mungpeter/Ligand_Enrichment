@@ -5,21 +5,26 @@
 ##
 ##	16.05.13	updated
 ##	
+##  This is a special case
+##  Only use when combining 2 sets of docking on the same receptor
+##  to calculate teh aggregate AUC result
+##
 ##	aggregate the results from 2 different sets of data for AUC
 ##	use with run_fred.csh and run_aug_gen.csh
 
 if ($#argv != 5) then
   echo ''
-  echo '  Usage: x.csh [list of new files]' 
-  echo '               [path to old files]'
-  echo '               [sufflix to remove in new files]'
-  echo '               [sufflix of OLD files]'
-  echo '               [sufflix for aggregated files]'
+  echo '  Usage: x.csh "
+  echo '               [ list of new files ]' 
+  echo '               [ path to old files ]'
+  echo '               [ suffix to remove in new files ]'
+  echo '               [ suffix of OLD files ]'
+  echo '               [ suffix for aggregated files ]'
   echo ''
   echo '   e.g.: x.csh lig.list ../../old  docked.txt docked.agg.txt'
   echo '               new.docked.agg.txt'
   echo ''
-  echo '         Sufflix of aggregrated file: agg.txt'
+  echo '         Suffix of aggregrated file: agg.txt'
   echo '         Old and New files must have mostly SAME NAME'
   echo ''
   exit

@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+########################################################
+#
+#  v1  14.03.26  original from Claire Colas
+#
+#  Use enrichment data to calculate AUC and log(AUC) value
+#
+########################################################
+
 import sys, os
 import numpy as np
 from numpy import trapz

@@ -1,3 +1,0 @@
-- Create a file all.txt only with the names of the ligands in the dataset ranked by the score (like in the example directoy)
-- Create a file actives.txt only with the names of the known substrates
-- run job_AUC.sh and you will get the enrichment profiles in the output png file

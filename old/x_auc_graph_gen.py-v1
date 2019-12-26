@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+########################################################
+#
+#  v1  14.03.26  original from Claire Colas
+#
+#  generate AUC and log(AUC) figures
+#
+########################################################
+
 import sys,os
 import pylab
 from math import log10

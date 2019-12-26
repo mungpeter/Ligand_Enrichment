@@ -4,14 +4,21 @@ import sys, os
 import numpy as np
 import pandas as pd
 
+###########################################################
 ##
-## 19.12.21
-## Peter MU Ung
+##  Peter MU Ung
 ##
-## in practice, all 3 methods take the same amount of time
+##  v1  14.03.26  original from Claire Colas
+##  v2  19.12.21  rewritten for different approaches
+##
+##  This script calculates the AUC and log(AUC) values of the 
+##  ranked data.
+##  in practice, all 3 methods take the same amount of time
+##  because the bottleneck for calculation is somewhere else
 ##
 ###########################################################
-## 1000 data ~ 5.20 ms
+
+## All-pandas approach, too much pandas overhead. 1000 data ~ 5.20 ms
 def slowest_method(inf):
   df = pd.read_csv(inf, header=None, comment='#', sep='\s+').dropna()
   df.columns = ['xla', 'yla']
@@ -29,7 +36,7 @@ def slowest_method(inf):
 
 
 #########################################################
-## 1000 data ~ 4.00 ms
+## Mixed approach, some overhead. 1000 data ~ 4.00 ms
 def slow_method(inf):
   df = pd.read_csv(inf, header=None, comment='#', sep='\s+').dropna()
   data_x2 = df[0].to_numpy()/1000
@@ -51,7 +58,7 @@ def slow_method(inf):
 
 
 ########################################################
-## 1000 data ~ 2.88 ms
+## Purely python approach. No overhead. 1000 data ~ 2.88 ms
 def faster_method(inf):
   
   f = open(inf,"r")

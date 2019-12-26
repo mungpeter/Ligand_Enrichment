@@ -1,53 +1,49 @@
 #!/usr/bin/env python3
 
-## Rewritten by Dane Hillard, 4 June 2014
+####################################################################
+#
+#  v1   14.03.26  Original from Clair Colas as "enrich.sh"
+#  v2   14.06.04  Rewritten by Dane Hillard, 4 June 2014
+#  v3   19.12.25  Updated to handle parsing internally
+#
+#  This script calculates AUC curves from the specified input files.
+#  In addition, enrichment factor (EF) at different subset ratios is
+#  also calculated.
+#
+####################################################################
 import sys,re
 import gzip,bz2
 import numpy as np
-
-def file_handle(file_name):
-  if re.search(r'.gz$', file_name):
-    handle = gzip.open(file_name, 'r')
-  elif re.search(r'.bz2$', file_name):
-    handle = bz2.BZ2File(file_name, 'r')
-  else:
-    handle = open(file_name, 'r')
-
-  print("## Opening "+file_name)
-  return handle
-
-#################################
-
-def get_compound_set_from_file(compound_file_name):
-  compound_set = []
-  with file_handle(compound_file_name) as compound_file:
-
-    Lines = [line.rstrip() for line in compound_file]
-    for compound in Lines:
-      if re.search(r'^#', compound): continue
-      compound_set.append(compound)
-  return compound_set
-
-################################
+import pandas as pd
 
 usage_message = """
-Usage: enrich.py <docking compounds file> <active compounds file>\n
+  Usage: enrich.py 
+      [ ranked docking compounds file: .txt ] # use 1st col; no header
+      [ active compounds file:         .txt ] # use 1st col; no header\n
 This script calculates AUC curves from the specified input files.
 In addition, enrichment factor (EF) at different subset ratios is
 also calculated.
 """
 if len(sys.argv) < 3: sys.exit(usage_message)
 
-data_set_file_name = sys.argv[1]
+data_set_file_name   = sys.argv[1]
 active_set_file_name = sys.argv[2]
 
-Data_Set = get_compound_set_from_file(data_set_file_name)
+data_set_file_pref   = data_set_file_name.split('.txt')[0]
+#########################################################################
+
+## Read in files
+rdf = pd.read_csv(data_set_file_name, header=None, delimiter='\s+', comment='#').dropna()
+Data_Set = rdf.iloc[:,0].tolist()
 data_set_count = float(len(Data_Set))
+print('Ranked input file: {}\n'.format(int(data_set_count)))
 
-print(data_set_count)
-Active_Set = get_compound_set_from_file(active_set_file_name)
+kdf = pd.read_csv(active_set_file_name, header=None, delimiter='\s+', comment='#').dropna()
+Active_Set = kdf.iloc[:,0].tolist()
 active_count = float(len(Active_Set))
+print('Known active file: {}\n'.format(int(active_count)))
 
+## Calculate enrichment subsets in different ranges
 active_ratio = np.divide(active_count, data_set_count)
 Subsets = [[int(round(data_set_count * 0.01)), 1 ],
            [int(round(data_set_count * 0.05)), 5 ],
@@ -56,20 +52,20 @@ Subsets = [[int(round(data_set_count * 0.01)), 1 ],
            [int(round(data_set_count * 0.20)), 20],
            [int(round(data_set_count * 0.25)), 25],
            [int(round(data_set_count * 0.50)), 50],
-           [int(round(data_set_count * 0.99)),100]]
+           [int(round(data_set_count * 0.99)),100] ]
 
-print('Total : {0}\nActive : {1}\nInactive : {2}'.format(
+print('Total : {0}\nActive : {1}\nInactive : {2}\n'.format(
         data_set_count, active_count, data_set_count - active_count))
 
-with open('{0}.enr.dud'.format(data_set_file_name), 'w') as output_dud:
-  with open('{0}.enr1000.dud'.format(data_set_file_name), 'w') as output_dud_1000:
+with open('{0}.enr.dud'.format(data_set_file_pref), 'w') as output_dud:
+  with open('{0}.enr1000.dud'.format(data_set_file_pref), 'w') as output_dud_1000:
       output_dud.write('0.00 0.00\n')		
       output_dud_1000.write('0.00 0.00\n')		
 
-      EF_active_found = 0.0
-      active_found = 0.0
+      EF_active_found  = 0.0
+      active_found     = 0.0
       active_not_found = 0.0
-      Active_Found = []
+      Active_Found     = []
 
       for data_set_index, compound in enumerate(Data_Set):
         Name = compound.split()

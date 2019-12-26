@@ -1,0 +1,52 @@
+#!/bin/csh
+
+#
+# Peter MU Ung @ MSSM
+#
+# v1  14.06.14
+#
+# calculate the enrichment factor and AUC/logAUC of binding result of
+# known ligands from a set of known nonbinders
+#
+
+if ($#argv != 3)  then
+  echo ""
+  echo "    > ${0}"
+  echo "         [ Ranked Data File: .txt ]  * only use name in 1st col, no header"
+  echo "         [ Known Actives:    .txt ]  * only use name in 1st col, no header"
+  echo "         [ AUC Output Prefix      ]"
+  echo ""
+  exit 1
+endif
+
+set script = `pwd`
+
+echo $script
+echo $argv[1]
+
+# Extract data
+grep -v '#' $argv[1] | grep -v "Score" > _temp.$argv[1]
+$script/x_extract_column.pl _temp.$argv[1] 1 > _temp.$argv[3]
+
+set name = `basename $argv[1] .txt`
+
+## Calculate enrichment data, use that to calc AUC and log(AUC) values
+$script/x_calc_enrich.py    \
+  _temp.$argv[3]       \
+  $argv[2]
+
+$script/x_calc_logauc.py       \
+  _temp.$argv[3].enr1000.dud   \
+    > _temp.$argv[3].AUC
+echo $name `cat _temp.$argv[3].AUC` >> $name.AUC.dat
+
+## Generate AUC figure
+set num = `cat _temp.$argv[3].enr.dud | wc -l`
+
+$script/x_auc_graph_gen.py 
+  _temp.$argv[3].AUC       \
+  _temp.$argv[3].enr.dud   \
+  $argv[3]                 \
+  $num
+
+rm _temp.$argv[3]* _temp.$argv[1]

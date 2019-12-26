@@ -1,5 +1,14 @@
 #!/bin/bash
 
+##
+##  Got from Claire Colas
+##
+##  v1.  14.03.26
+##
+##  original shell script to calculate the enrichment of docking result
+##  superseded by the python version x_enrich.py for better readability
+##
+
 USAGE="ERROR:
 This script calculates AUC curves from two input files:
 1) the docking compounds ranked and 2) the active compounds."
