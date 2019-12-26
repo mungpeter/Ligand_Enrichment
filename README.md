@@ -35,22 +35,21 @@ The general process is:
   e.g.> *.csh  score.list  known_actives.txt  svg
                "/directory/to/enrich_scripts"
 ```
-- This batch-mode shell script basically loops **1_job_AUC.csh** over a list of ranked data files. supply a list of ranked docking result files and a known binders file to calculate AUC for each individual docking result on the list.
+- This batch-mode shell script basically loops **1_calc_AUC.csh** over a list of ranked data files. supply a list of ranked docking result files and a known binders file to calculate AUC for each individual docking result on the list.
 
 
 #############################
 - For a very special case where 2 docking results on the same receptor need to be combined before calculating hte AUC values:
 
 ```
-> run_aggregate_auc_step1.csh
-> run_aggregate_auc_step2.csh
+> old/run_aggregate_auc_step1.csh
+> old/run_aggregate_auc_step2.csh
 ```
 
 ##########################################################################
 # Required Packages
 ```
 csh/tcsh       # shell
-perl           #
 python         # 3.6.8+
    numpy       # 1.16.2+
    pandas      # 0.24.2+
